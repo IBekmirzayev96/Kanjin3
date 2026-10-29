@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanji flashcardlar N5</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&display=swap">
+<style>
+:root{--bg:#f5f4ef;--card:#fffefb;--ink:#1c2541;--muted:#5d6482;--line:#d9d6ca;--ok:#2f7d5b;--again:#b3412f}
+@media (prefers-color-scheme:dark){:root{--bg:#161a2b;--card:#20263d;--ink:#eceaf5;--muted:#a3a8c4;--line:#3a4162;--ok:#5bc08f;--again:#e27b68}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+h1{font-size:1.15rem;margin:0 0 4px;font-weight:600}
+.stats{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+.stats b{color:var(--ink)}
+.scene{width:100%;max-width:380px;height:320px;perspective:1000px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.back{transform:rotateY(180deg);gap:8px}
+.kanji{font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:7.5rem;line-height:1;font-weight:700}
+.hint{margin-top:18px;color:var(--muted);font-size:.85rem}
+.meaning{font-size:1.6rem;font-weight:600;margin-bottom:6px}
+.row{font-size:1rem;color:var(--muted)}
+.row b{color:var(--ink);font-family:"Noto Serif JP",serif;font-weight:500}
+.ex{margin-top:8px;padding-top:10px;border-top:1px solid var(--line);font-size:.95rem;font-family:"Noto Serif JP",serif}
+.controls{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ok{border-color:var(--ok);color:var(--ok)}
+.again{border-color:var(--again);color:var(--again)}
+.done{display:none;text-align:center;margin-top:30px}
+</style>
+</head>
+<body>
+<h1>Kanji flashcardlar (N5)</h1>
+<div class="stats"><span id="pos"></span> · Bilaman: <b id="known">0</b> · Takrorlash: <b id="again">0</b></div>
+
+<div class="scene" id="scene" tabindex="0" aria-label="Kartani aylantirish">
+  <div class="card" id="card">
+    <div class="face front"><div class="kanji" id="kanji"></div><div class="hint">Aylantirish uchun bosing</div></div>
+    <div class="face back">
+      <div class="meaning" id="meaning"></div>
+      <div class="row">On'yomi: <b id="on"></b></div>
+      <div class="row">Kun'yomi: <b id="kun"></b></div>
+      <div class="ex" id="ex"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls" id="controls">
+  <button id="prev">Oldingi</button>
+  <button class="again" id="btnAgain">Takrorlayman</button>
+  <button class="ok" id="btnOk">Bilaman</button>
+  <button id="next">Keyingi</button>
+</div>
+<div class="controls"><button id="shuffle">Aralashtirish</button><button id="reset">Boshidan boshlash</button></div>
+
+<div class="done" id="done"><p>Hamma kartalar tugadi.</p><button id="retry">Takrorlash kerak bo'lganlarni qayta ko'rish</button></div>
+
+<script>
+var DATA = [
+  {k:"日", m:"Kun, quyosh", on:"ニチ (nichi)", kun:"ひ (hi)", ex:"日本 (nihon): Yaponiya"},
+  {k:"月", m:"Oy", on:"ゲツ (getsu)", kun:"つき (tsuki)", ex:"月曜日 (getsuyōbi): dushanba"},
+  {k:"火", m:"Olov", on:"カ (ka)", kun:"ひ (hi)", ex:"火曜日 (kayōbi): seshanba"},
+  {k:"水", m:"Suv", on:"スイ (sui)", kun:"みず (mizu)", ex:"水曜日 (suiyōbi): chorshanba"},
+  {k:"木", m:"Daraxt, yog'och", on:"モク (moku)", kun:"き (ki)", ex:"木曜日 (mokuyōbi): payshanba"},
+  {k:"金", m:"Oltin, pul", on:"キン (kin)", kun:"かね (kane)", ex:"金曜日 (kin'yōbi): juma"},
+  {k:"土", m:"Tuproq, yer", on:"ド (do)", kun:"つち (tsuchi)", ex:"土曜日 (doyōbi): shanba"},
+  {k:"人", m:"Odam", on:"ジン (jin)", kun:"ひと (hito)", ex:"日本人 (nihonjin): yaponiyalik"},
+  {k:"山", m:"Tog'", on:"サン (san)", kun:"やま (yama)", ex:"富士山 (Fujisan): Fuji tog'i"},
+  {k:"川", m:"Daryo", on:"セン (sen)", kun:"かわ (kawa)", ex:"川 (kawa): daryo"}
+];
+
+var deck = DATA.slice(), i = 0, known = 0, again = 0, redo = [];
+var $ = function (id) { return document.getElementById(id); };
+
+function show() {
+  if (!deck.length) return;
+  var c = deck[i];
+  $("card").classList.remove("flip");
+  $("kanji").textContent = c.k;
+  $("meaning").textContent = c.m;
+  $("on").textContent = c.on;
+  $("kun").textContent = c.kun;
+  $("ex").textContent = c.ex;
+  $("pos").textContent = (i + 1) + " / " + deck.length;
+  $("known").textContent = known;
+  $("again").textContent = again;
+}
+function flip() { $("card").classList.toggle("flip"); }
+function go(d) { i = (i + d + deck.length) % deck.length; show(); }
+function mark(ok) {
+  if (ok) known++; else { again++; redo.push(deck[i]); }
+  if (i === deck.length - 1) { finish(); } else { i++; show(); }
+}
+function finish() {
+  $("scene").style.display = "none";
+  $("controls").style.display = "none";
+  $("done").style.display = "block";
+  $("known").textContent = known;
+  $("again").textContent = again;
+  $("retry").style.display = redo.length ? "inline-block" : "none";
+}
+function start(list) {
+  deck = list; i = 0; known = 0; again = 0; redo = [];
+  $("scene").style.display = "";
+  $("controls").style.display = "";
+  $("done").style.display = "none";
+  show();
+}
+function shuffle(a) {
+  a = a.slice();
+  for (var n = a.length - 1; n > 0; n--) {
+    var j = Math.floor(Math.random() * (n + 1)), t = a[n]; a[n] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+$("scene").onclick = flip;
+$("scene").onkeydown = function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); } };
+$("prev").onclick = function () { go(-1); };
+$("next").onclick = function () { go(1); };
+$("btnOk").onclick = function () { mark(true); };
+$("btnAgain").onclick = function () { mark(false); };
+$("shuffle").onclick = function () { start(shuffle(DATA)); };
+$("reset").onclick = function () { start(DATA.slice()); };
+$("retry").onclick = function () { start(shuffle(redo)); };
+document.onkeydown = function (e) {
+  if (e.key === "ArrowRight") go(1);
+  if (e.key === "ArrowLeft") go(-1);
+};
+
+show();
+</script>
+</body>
+</html>
