@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanji flashcardlar N5</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#1b2850;--bg2:#111a36;--card:#f7f5ee;--ink:#18223f;--fg:#eef0f8;--dim:#9aa6cf;--line:#c9d1e8;--gold:#f2b134;--ok:#7fd1ae;--bad:#ff8a73;
+--grid:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%237fb0c4' stroke-width='.35'%3E%3Crect x='4' y='4' width='92' height='92'/%3E%3Cpath stroke-dasharray='2 2' d='M50 4V96M4 50H96M4 4L96 96M96 4L4 96'/%3E%3C/g%3E%3C/svg%3E")}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:22px 16px 48px;color:var(--fg);font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 10% 0,#2c3d76 0,transparent 50%),radial-gradient(ellipse at 100% 100%,#243463 0,transparent 45%),var(--bg2)}
+header{display:flex;align-items:center;gap:14px;width:100%;max-width:420px;margin-bottom:18px}
+.mark{writing-mode:vertical-rl;font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;font-weight:800;font-size:2.8rem;line-height:1;color:var(--gold);letter-spacing:.06em}
+h1{font-family:"Shippori Mincho",serif;font-size:1.6rem;margin:0;font-weight:800}
+.sub{margin:2px 0 0;color:var(--dim);font-size:.9rem}
+#cardsMode,#testMode{width:100%;max-width:420px}
+button{font:inherit;padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:var(--fg);cursor:pointer}
+button:hover{background:rgba(255,255,255,.12)}
+button:focus-visible,.scene:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.tabs{display:flex;gap:4px;width:100%;max-width:420px;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--dim);padding:8px 14px;margin-bottom:-1px}
+.tabs button.on{color:var(--fg);border-bottom-color:var(--gold)}
+.tabs+.tabs{border-bottom:0;gap:8px;margin-bottom:16px}
+.tabs+.tabs button{border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 14px;font-size:.9rem;margin:0}
+.tabs+.tabs button.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.stats{color:var(--dim);font-size:.9rem;margin-bottom:10px}
+.stats b{color:var(--fg)}
+.bar{height:4px;background:rgba(255,255,255,.12);border-radius:4px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+.scene{width:100%;height:340px;perspective:1100px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background-color:var(--card);color:var(--ink);border-radius:6px;box-shadow:0 20px 44px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center}
+.front{background-image:var(--grid);background-size:100% 100%}
+.back{transform:rotateY(180deg);gap:8px;border-top:7px solid var(--gold)}
+.kanji{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;font-size:7.5rem;line-height:1;font-weight:700}
+.hint{position:absolute;bottom:14px;color:#6d78a3;font-size:.8rem}
+.meaning{font-family:"Shippori Mincho",serif;font-size:1.7rem;font-weight:800;margin-bottom:4px}
+.row{font-size:1rem;color:#56628d}
+.row b{color:var(--ink);font-family:"Shippori Mincho",serif;font-weight:600}
+.ex{margin-top:8px;padding-top:10px;border-top:1px dashed #b3bcdb;font-family:"Shippori Mincho",serif;white-space:pre-line;line-height:1.5;font-size:.85rem}
+.controls{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center}
+.ok{border-color:var(--ok);color:var(--ok)}
+.again{border-color:var(--bad);color:var(--bad)}
+.done{display:none;text-align:center;margin-top:30px}
+.done h2{font-family:"Shippori Mincho",serif;font-size:1.8rem;color:var(--gold)}
+.qbox{background-color:var(--card);background-image:var(--grid);background-size:100% 100%;color:var(--ink);border-radius:6px;padding:30px 24px;text-align:center;box-shadow:0 20px 44px rgba(0,0,0,.4);min-height:200px;display:flex;align-items:center;justify-content:center}
+#opts{display:grid;gap:10px;margin-top:16px}
+.opt{text-align:left;padding:12px 16px}
+.opt.right{border-color:var(--ok);color:var(--ok);background:rgba(127,209,174,.12)}
+.opt.wrong{border-color:var(--bad);color:var(--bad);background:rgba(255,138,115,.12)}
+#tfb{text-align:center;margin-top:12px;min-height:1.4em;color:var(--dim)}
+@media (prefers-reduced-motion:reduce){.card,.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="mark">漢字</div><div><h1>Kanji kartalar</h1><p class="sub">Yapon tili: N5 va N3</p></div></header>
+<div class="tabs"><button id="tabCards" class="on">Kartalar</button><button id="tabTest">Test</button></div>
+<div class="tabs"><button id="lvN5" class="on">N5</button><button id="lvN3">N3 so'zlar</button><button id="lvK">Yakka kanji</button></div>
+<div id="cardsMode">
+<div class="stats"><span id="pos"></span> · Bilaman: <b id="known">0</b> · Takrorlash: <b id="again">0</b></div>
+<div class="bar"><i id="bar"></i></div>
+
+<div class="scene" id="scene" tabindex="0" aria-label="Kartani aylantirish">
+  <div class="card" id="card">
+    <div class="face front"><div class="kanji" id="kanji"></div><div class="hint">Aylantirish uchun bosing</div></div>
+    <div class="face back">
+      <div class="meaning" id="meaning"></div>
+      <div class="row"><span id="lOn">On'yomi:</span> <b id="on"></b></div>
+      <div class="row">Kun'yomi: <b id="kun"></b></div>
+      <div class="ex" id="ex"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls" id="controls">
+  <button id="prev">Oldingi</button>
+  <button class="again" id="btnAgain">Takrorlayman</button>
+  <button class="ok" id="btnOk">Bilaman</button>
+  <button id="next">Keyingi</button>
+</div>
+<div class="controls"><button id="shuffle">Aralashtirish</button><button id="reset">Boshidan boshlash</button></div>
+
+<div class="done" id="done"><p>Hamma kartalar tugadi.</p><button id="retry">Takrorlash kerak bo'lganlarni qayta ko'rish</button></div>
+</div>
+
+<div id="testMode" style="display:none">
+  <div class="stats" style="text-align:center">Savollar soni:
+    <select id="tcount" style="font:inherit;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)">
+      <option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option><option value="0">Hammasi</option>
+    </select>
+  </div>
+  <div id="qwrap">
+    <div class="stats" style="text-align:center">Savol <b id="tq">1</b> / <span id="tn">10</span> · To'g'ri: <b id="ts">0</b></div>
+    <div class="qbox"><div class="kanji" id="tk"></div></div>
+    <div id="opts"></div>
+    <div class="row" id="tfb"></div>
+    <div class="controls"><button id="tnext" style="display:none"></button></div>
+  </div>
+  <div class="done" id="tres"><h2 id="tmsg"></h2><button id="tagain">Testni qayta boshlash</button></div>
+</div>
+
+<script>
+var N5 = [
+  {k:"日", m:"Kun, quyosh", on:"ニチ (nichi)", kun:"ひ (hi)", ex:"日本 (nihon): Yaponiya"},
+  {k:"月", m:"Oy", on:"ゲツ (getsu)", kun:"つき (tsuki)", ex:"月曜日 (getsuyōbi): dushanba"},
+  {k:"火", m:"Olov", on:"カ (ka)", kun:"ひ (hi)", ex:"火曜日 (kayōbi): seshanba"},
+  {k:"水", m:"Suv", on:"スイ (sui)", kun:"みず (mizu)", ex:"水曜日 (suiyōbi): chorshanba"},
+  {k:"木", m:"Daraxt, yog'och", on:"モク (moku)", kun:"き (ki)", ex:"木曜日 (mokuyōbi): payshanba"},
+  {k:"金", m:"Oltin, pul", on:"キン (kin)", kun:"かね (kane)", ex:"金曜日 (kin'yōbi): juma"},
+  {k:"土", m:"Tuproq, yer", on:"ド (do)", kun:"つち (tsuchi)", ex:"土曜日 (doyōbi): shanba"},
+  {k:"人", m:"Odam", on:"ジン (jin)", kun:"ひと (hito)", ex:"日本人 (nihonjin): yaponiyalik"},
+  {k:"山", m:"Tog'", on:"サン (san)", kun:"やま (yama)", ex:"富士山 (Fujisan): Fuji tog'i"},
+  {k:"川", m:"Daryo", on:"セン (sen)", kun:"かわ (kawa)", ex:"川 (kawa): daryo"}
+];
+var KJ = parseN3("満|マン|み-ちる|to'la, qoniqish\n足|ソク|あし,た-りる|oyoq; yetarli bo'lmoq\n員|イン||a'zo, xodim\n席|セキ||o'rin\n未|ミ||hali (emas)\n不|フ,ブ||inkor qo'shimchasi\n優|ユウ|やさ-しい,すぐ-れる|mehribon; ustun\n先|セン|さき|oldin, avval\n女|ジョ,ニョ|おんな|ayol\n俳|ハイ||aktyor; haiku\n欠|ケツ|か-ける|yetishmaslik\n点|テン||nuqta; ball\n着|チャク|き-る,つ-く|kiymoq; yetib kelmoq\n差|サ|さ-す|farq; uzatmoq\n出|シュツ|で-る,だ-す|chiqmoq; chiqarmoq\n人|ジン,ニン|ひと|odam\n交|コウ|まじ-わる|kesishmoq; almashmoq\n数|スウ|かず,かぞ-える|son; sanamoq\n注|チュウ|そそ-ぐ|quymoq; e'tibor\n意|イ||ma'no; niyat\n字|ジ||harf, belgi\n文|ブン|ふみ|jumla, matn\n分|ブン,フン|わ-ける|bo'lmoq; daqiqa\n結|ケツ|むす-ぶ|bog'lamoq; yakun\n構|コウ|かま-える|tuzilma\n局|キョク||idora, bo'lim\n果|カ|は-たす|natija; meva\n論|ロン||bahs, nazariya\n婚|コン||nikoh\n新|シン|あたら-しい|yangi\n旅|リョ|たび|sayohat\n行|コウ,ギョウ|い-く|bormoq\n約|ヤク||va'da; taxminan\n式|シキ||marosim; formula\n卒|ソツ||bitirmoq\n業|ギョウ|わざ|ish, kasb\n入|ニュウ|い-る,はい-る|kirmoq\n社|シャ|やしろ|kompaniya\n予|ヨ||oldindan\n定|テイ|さだ-める|belgilamoq\n表|ヒョウ|おもて|jadval; yuza\n防|ボウ|ふせ-ぐ|himoya qilmoq\n習|シュウ|なら-う|o'rganmoq\n案|アン||reja, taklif\n内|ナイ|うち|ichki\n制|セイ||tizim; cheklov\n束|ソク|たば|bog'lam\n花|カ|はな|gul\n番|バン||tartib raqami\n通|ツウ|とお-る,かよ-う|o'tmoq; qatnamoq\n号|ゴウ||raqam; belgi\n線|セン||chiziq\n信|シン||ishonch; signal\n暗|アン|くら-い|qorong'i\n証|ショウ||dalil\n電|デン||elektr\n話|ワ|はな-す|gapirmoq; gap\n客|キャク||mehmon\n様|ヨウ|さま|janob; usul\n観|カン||kuzatmoq\n光|コウ|ひかり|nur\n参|サン|まい-る|qatnashmoq\n加|カ|くわ-える|qo'shmoq\n考|コウ|かんが-える|o'ylamoq\n書|ショ|か-く|yozmoq\n持|ジ|も-つ|ushlamoq\n増|ゾウ|ふ-える|ko'paymoq\n熱|ネツ|あつ-い|issiq; harorat\n追|ツイ|お-う|quvmoq\n料|リョウ||to'lov; xomashyo\n金|キン|かね|pul; oltin\n費|ヒ|つい-やす|xarajat\n宿|シュク|やど|turar joy\n泊|ハク|と-まる|tunamoq\n用|ヨウ|もち-いる|foydalanmoq; ish\n消|ショウ|き-える,け-す|o'chmoq; o'chirmoq\n者|シャ|もの|kishi\n会|カイ|あ-う|uchrashmoq; yig'ilish\n期|キ||muddat\n券|ケン||bilet\n粗|ソ|あら-い|dag'al\n大|ダイ|おお-きい|katta\n乗|ジョウ|の-る|minmoq\n車|シャ|くるま|mashina\n回|カイ|まわ-る|aylanmoq; marta\n時|ジ|とき|vaqt\n間|カン|あいだ|oraliq\n待|タイ|ま-つ|kutmoq\n長|チョウ|なが-い|uzun\n限|ゲン|かぎ-る|cheklamoq\n度|ド|たび|daraja; marta\n受|ジュ|う-ける|qabul qilmoq\n験|ケン||imtihon, sinov\n取|シュ|と-る|olmoq\n継|ケイ|つ-ぐ|davom ettirmoq\n付|フ|つ-く|yopishmoq; qo'shmoq\n片|ヘン|かた|bir tomon\n気|キ,ケ||ruh; kayfiyat\n寄|キ|よ-る|yaqinlashmoq\n支|シ|ささ-える|qo'llab-quvvatlamoq\n店|テン|みせ|do'kon\n本|ホン|もと|kitob; asl\n払|フツ|はら-う|to'lamoq\n税|ゼイ||soliq\n落|ラク|お-ちる|tushmoq\n込||こ-む|ichiga kirmoq\n申|シン|もう-す|aytmoq (hurmat)\n味|ミ|あじ|ta'm; ma'no\n振|シン|ふ-る|silkitmoq\n請|セイ,シン|こ-う|so'ramoq\n訳|ヤク|わけ|tarjima; sabab\n上|ジョウ|うえ|yuqori\n連|レン|つ-れる|boshlab bormoq\n休|キュウ|やす-む|dam olmoq\n来|ライ|く-る|kelmoq\n絡|ラク|から-む|bog'lanmoq\n続|ゾク|つづ-く|davom etmoq\n手|シュ|て|qo'l\n借|シャク|か-りる|qarz olmoq\n直|チョク|なお-す|tuzatmoq; to'g'ri\n接|セツ|つ-ぐ|ulamoq\n面|メン|おもて|yuz; tomon\n山|サン|やま|tog'\n目|モク|め|ko'z\n幹|カン|みき|magistral; tana\n道|ドウ|みち|yo'l\n路|ロ|じ|yo'l\n高|コウ|たか-い|baland\n速|ソク|はや-い|tez\n下|カ|した|past\n題|ダイ||mavzu; sarlavha\n日|ニチ,ジツ|ひ,か|kun; quyosh\n一|イチ|ひと-つ|bir\n二|ニ|ふた-つ|ikki\n寝|シン|ね-る|uxlamoq\n転|テン|ころ-がる|aylanmoq; ko'chmoq\n昼|チュウ|ひる|kunduz; tushlik\n坊|ボウ||bola; rohib\n室|シツ|むろ|xona\n求|キュウ|もと-める|talab qilmoq\n要|ヨウ|い-る|kerak bo'lmoq\n卓|タク||stol; ustun\n球|キュウ|たま|to'p; shar\n野|ヤ|の|dala\n地|チ,ジ||yer; joy\n環|カン||halqa; atrof\n境|キョウ,ケイ|さかい|chegara\n温|オン|あたた-かい|iliq\n泉|セン|いずみ|buloq\n常|ジョウ|つね|doim; odatiy\n暖|ダン|あたた-かい|iliq (havo)\n房|ボウ|ふさ|xona; popuk\n化|カ,ケ|ば-ける|o'zgarish\n製|セイ||ishlab chiqarish\n品|ヒン|しな|buyum; sifat\n悪|アク|わる-い|yomon\n粧|ショウ||bezanmoq\n願|ガン|ねが-う|iltimos; tilak\n横|オウ|よこ|yon, eniga\n浜|ヒン|はま|sohil\n幅|フク|はば|kenglik\n断|ダン|ことわ-る,た-つ|rad etmoq; uzmoq\n歩|ホ,ブ|ある-く|yurmoq\n健|ケン|すこ-やか|sog'lom\n康|コウ||salomatlik\n診|シン|み-る|ko'rikdan o'tkazmoq\n判|ハン,バン||hukm; muhr\n無|ム,ブ|な-い|yo'q\n外|ガイ,ゲ|そと,はず-す|tashqi\n科|カ||bo'lim; fan\n眼|ガン|め|ko'z\n教|キョウ|おし-える|o'rgatmoq\n学|ガク|まな-ぶ|o'qimoq\n帰|キ|かえ-る|qaytmoq\n宅|タク||uy\n自|ジ,シ|みずか-ら|o'zi\n配|ハイ|くば-る|tarqatmoq; ta'minlamoq\n便|ベン,ビン|たよ-り|qulay; pochta\n達|タツ||yetmoq; ko'plik\n送|ソウ|おく-る|yubormoq\n心|シン|こころ|yurak; qalb\n冊|サツ||kitob sanagichi\n過|カ|す-ぎる|o'tmoq; oshib ketmoq\n去|キョ,コ|さ-る|ketmoq; o'tgan\n選|セン|えら-ぶ|tanlamoq\n挙|キョ|あ-げる|ko'tarmoq; saylov\n責|セキ|せ-める|mas'uliyat; ayblamoq\n任|ニン|まか-せる|vazifa; topshirmoq\n理|リ||sabab; tartib\n駄|ダ||befoyda\n復|フク||qaytmoq; takrorlamoq\n往|オウ||bormoq\n活|カツ||jonli; faol\n生|セイ,ショウ|い-きる,う-まれる,なま|yashamoq; tug'ilmoq; xom\n動|ドウ|うご-く|harakatlanmoq\n躍|ヤク|おど-る|sakramoq\n在|ザイ|あ-る|bo'lmoq; mavjud\n留|リュウ,ル|と-める|to'xtamoq; qolmoq\n現|ゲン|あらわ-れる|hozirgi; namoyon bo'lmoq\n代|ダイ|か-わる,よ|davr; o'rniga\n実|ジツ|み|haqiqat; meva\n物|ブツ,モツ|もの|narsa\n際|サイ|きわ|payt; chegara\n国|コク|くに|mamlakat\n成|セイ|な-る|bo'lmoq; erishmoq\n年|ネン|とし|yil\n役|ヤク,エキ||rol; vazifa\n立|リツ|た-つ|turmoq\n市|シ|いち|shahar; bozor\n所|ショ|ところ|joy\n開|カイ|あ-ける,ひら-く|ochmoq\n閉|ヘイ|し-める,と-じる|yopmoq\n飛|ヒ|と-ぶ|uchmoq\n機|キ|はた|mashina; imkoniyat\n械|カイ||qurilma\n能|ノウ||qobiliyat\n関|カン|せき|aloqa; to'siq\n玄|ゲン||sirli; kirish\n東|トウ|ひがし|sharq\n方|ホウ|かた|tomon; usul\n割|カツ|わ-る|bo'lmoq; ulush\n郵|ユウ||pochta\n薬|ヤク|くすり|dori\n営|エイ|いとな-む|boshqarmoq\n絵|カイ,エ||rasm\n画|ガ,カク||rasm; chizma\n換|カン|か-える|almashtirmoq\n言|ゲン,ゴン|い-う,こと|aytmoq; so'z\n引|イン|ひ-く|tortmoq\n第|ダイ||tartib qo'shimchasi\n解|カイ,ゲ|と-く|yechmoq; tushunmoq\n決|ケツ|き-める|qaror qilmoq\n答|トウ|こた-え|javob\n説|セツ|と-く|tushuntirmoq\n士|シ||mutaxassis\n火|カ|ひ|olov\n器|キ|うつわ|idish; asbob\n極|キョク|きわ-める|chekka; nihoyat\n的|テキ|まと|nishon; -iy qo'shimchasi\n京|キョウ,ケイ||poytaxt\n都|ト,ツ|みやこ|poytaxt; shahar\n以|イ||dan (beri/keyin)\n家|カ,ケ|いえ,うち|uy; oila\n利|リ|き-く|foyda\n忘|ボウ|わす-れる|unutmoq\n商|ショウ|あきな-う|savdo\n返|ヘン|かえ-す|qaytarmoq\n事|ジ|こと|ish; voqea\n却|キャク||qaytarmoq\n発|ハツ,ホツ||chiqmoq; boshlamoq\n祭|サイ|まつ-り|bayram\n三|サン|みっ-つ|uch\n白|ハク|しろ-い|oq\n真|シン|ま|haqiqiy\n由|ユ,ユウ|よし|sabab\n週|シュウ||hafta\n末|マツ|すえ|oxiri\n月|ゲツ,ガツ|つき|oy\n準|ジュン||me'yor; tayyorlamoq\n備|ビ|そな-える|tayyorlamoq");
+var DATA = N5;
+var W = parseW("満足|まんぞく|qoniqish\n満員|まんいん|to'la (joy qolmagan)\n満席|まんせき|barcha o'rinlar band\n未満|みまん|...dan kam\n不満な|ふまんな|norozi\n優先|ゆうせん|ustuvorlik\n女優|じょゆう|aktrisa\n俳優|はいゆう|aktyor\n優しい|やさしい|mehribon\n欠点|けってん|kamchilik\n欠席|けっせき|qatnashmaslik\n欠ける|かける|singan; yetishmaslik\n欠かせない|かかせない|ajralmas, zarur\n席|せき|o'rin\n着席|ちゃくせき|joyga o'tirish\nカップル席|カップルせき|juftliklar uchun o'rin\n優先席|ゆうせんせき|imtiyozli o'rin\n満席|まんせき|barcha o'rinlar band\n差|さ|farq\n差し出す|さしだす|uzatmoq\n差出人|さしだしにん|jo'natuvchi\n交差点|こうさてん|chorraha\n点数|てんすう|ball\n注意点|ちゅういてん|e'tibor beriladigan jihat\nテストの点|テストのてん|test bali\n満点|まんてん|to'liq ball\n数字|すうじ|raqam\n文字数|もじすう|belgilar soni\n数分|すうふん|bir necha daqiqa\n数|かず|son\n数える|かぞえる|sanamoq\n結構な|けっこうな|a'lo; yetarli\n結局|けっきょく|oxir-oqibat\n結果|けっか|natija\n結論|けつろん|xulosa\n結ぶ|むすぶ|bog'lamoq\n結婚|けっこん|nikoh\n新婚旅行|しんこんりょこう|asal oyi sayohati\n婚約|こんやく|unashtiruv\n数式|すうしき|matematik formula\n卒業式|そつぎょうしき|bitiruv marosimi\n入社式|にゅうしゃしき|ishga qabul marosimi\n結婚式|けっこんしき|to'y\n予定|よてい|reja\n予定表|よていひょう|reja jadvali\n予防|よぼう|oldini olish\n予習|よしゅう|oldindan tayyorgarlik\n案内|あんない|yo'l ko'rsatish; taklif\n案|あん|reja, g'oya\n予約|よやく|bron qilish\n約~|やく~|taxminan ~\n制約|せいやく|cheklov\n約束|やくそく|va'da; kelishuv\n~束|~たば|~ bog'lam\n花束|はなたば|gul dastasi\n束ねる|たばねる|bog'lamoq\n交番|こうばん|politsiya posti\n交通|こうつう|transport\n番号|ばんごう|raqam\n~番|~ばん|~-chi (tartib)\n~番線|~ばんせん|~-chi yo'l (platforma)\n信号|しんごう|svetofor\n暗証番号|あんしょうばんごう|PIN-kod\n電話番号|でんわばんごう|telefon raqami\nお客様番号|おきゃくさまばんごう|mijoz raqami\n観光|かんこう|turizm\n観客|かんきゃく|tomoshabin\n客|きゃく|mehmon\nお客様|おきゃくさま|hurmatli mijoz\n観光客|かんこうきゃく|turist\n参加|さんか|qatnashish\n参考書|さんこうしょ|o'quv qo'llanma\n持参|じさん|o'zi bilan olib kelish\n参る|まいる|bormoq (hurmat)\n増加|ぞうか|ko'payish\n増える|ふえる|ko'paymoq\n増やす|ふやす|ko'paytirmoq\n加熱|かねつ|qizdirish\n追加料金|ついかりょうきん|qo'shimcha to'lov\n加わる|くわわる|qo'shilmoq\n参加費|さんかひ|qatnashish to'lovi\n宿泊費|しゅくはくひ|turar joy narxi\n費用|ひよう|xarajat\n消費者|しょうひしゃ|iste'molchi\n会費|かいひ|a'zolik badali\n定期券|ていきけん|oylik chipta\n粗大ゴミ券|そだいゴミけん|katta chiqindi talon\n乗車券|じょうしゃけん|yo'l chiptasi\n回数券|かいすうけん|ko'p martalik talon\n時期|じき|davr, mavsum\n期間|きかん|muddat\n期待|きたい|umid\n長期|ちょうき|uzoq muddat\n定期券|ていきけん|oylik chipta\n制限|せいげん|cheklash\n期限|きげん|oxirgi muddat\n限度|げんど|chegara\n限定|げんてい|cheklangan\n限る|かぎる|cheklamoq\n受信|じゅしん|signal qabul qilish\n受験|じゅけん|imtihon topshirish\n受ける|うける|qabul qilmoq; topshirmoq\n受け取る|うけとる|qabul qilib olmoq\n受け継がれる|うけつがれる|meros bo'lib o'tmoq\n受付|うけつけ|qabulxona\n片付ける|かたづける|tartibga solmoq\n付く|つく|yopishmoq\n気を付ける|きをつける|ehtiyot bo'lmoq\n寄付|きふ|xayriya\n支店|してん|filial\n本店|ほんてん|bosh ofis\n支社|ししゃ|filial kompaniya\n本社|ほんしゃ|bosh kompaniya\n払う|はらう|to'lamoq\n支払う|しはらう|to'lab bermoq\n消費税|しょうひぜい|iste'mol solig'i\n税金|ぜいきん|soliq\n落ち込む|おちこむ|tushkunlikka tushmoq\n申し込み|もうしこみ|ariza\n意味を込める|いみをこめる|ma'no yuklamoq\n税込|ぜいこみ|soliq bilan\n振り込む|ふりこむ|pul o'tkazmoq\n申込書|もうしこみしょ|ariza blankasi\n申請|しんせい|rasmiy ariza\n申し訳ない|もうしわけない|uzr, kechirasiz\n申し上げる|もうしあげる|aytmoq (hurmat)\n連休|れんきゅう|uzoq dam olish kunlari\n連れて行く|つれていく|olib bormoq\n連れて来る|つれてくる|olib kelmoq\n連絡|れんらく|aloqa\n連絡先|れんらくさき|aloqa ma'lumoti\n続く|つづく|davom etmoq\n続ける|つづける|davom ettirmoq\n手続き|てつづき|rasmiyatchilik\n借り続ける|かりつづける|qarz olishda davom etmoq\n連続|れんぞく|ketma-ket\n直接|ちょくせつ|bevosita\n面接|めんせつ|suhbat\n接続|せつぞく|ulanish\n直線|ちょくせん|to'g'ri chiziq\n直す|なおす|tuzatmoq\n直る|なおる|tuzalmoq\n線|せん|chiziq\n山手線|やまのてせん|Yamanote liniyasi\n大人目線|おとなめせん|kattalar nuqtai nazari\n新幹線|しんかんせん|tezyurar poyezd\n道路|どうろ|yo'l\n線路|せんろ|temir yo'l\n通路|つうろ|yo'lak\n高速道路|こうそくどうろ|avtomagistral\n宿泊|しゅくはく|turar joyda tunash\n下宿|げしゅく|pansion (xona ijarasi)\n宿題|しゅくだい|uy vazifasi\n新宿|しんじゅく|Shinjuku\n宿|やど|mehmonxona; turar joy\n宿泊日|しゅくはくび|turar joy sanasi\n泊まる|とまる|tunamoq\n泊める|とめる|tunatmoq\n一泊二日|いっぱくふつか|2 kun 1 tunlik\n寝る|ねる|uxlamoq\n寝転ぶ|ねころぶ|cho'zilib yotmoq\n昼寝|ひるね|kunduzgi uyqu\n寝坊|ねぼう|uyqudan kech turish\n寝室|しんしつ|yotoqxona\n求人|きゅうじん|ishchi qidirish\n要求|ようきゅう|talab\n請求書|せいきゅうしょ|hisob-faktura\n求める|もとめる|talab qilmoq\n卓球|たっきゅう|stol tennisi\n野球|やきゅう|beysbol\n地球|ちきゅう|Yer sayyorasi\n電球|でんきゅう|lampochka\n地球環境|ちきゅうかんきょう|global ekologiya\n温度|おんど|harorat\n気温|きおん|havo harorati\n温泉|おんせん|issiq buloq\n常温|じょうおん|xona harorati\n温かい|あたたかい|iliq (narsa)\n暖房|だんぼう|isitish\n温暖化|おんだんか|isish (iqlim)\n暖かい|あたたかい|iliq (havo)\n文化|ぶんか|madaniyat\n電化製品|でんかせいひん|maishiy texnika\n悪化|あっか|yomonlashish\n地球温暖化|ちきゅうおんだんか|global isish\n化粧|けしょう|bezanish\nお願い|おねがい|iltimos\n願う|ねがう|tilamoq\n横|よこ|yon; eni\n横浜|よこはま|Yokohama\n横幅|よこはば|eni (kengligi)\n横断歩道|おうだんほどう|piyodalar o'tish joyi\n健康診断|けんこうしんだん|tibbiy ko'rik\n判断|はんだん|hukm qilish\n無断|むだん|ruxsatsiz\n断る|ことわる|rad etmoq\n外科|げか|jarrohlik\n内科|ないか|terapiya\n眼科|がんか|oftalmologiya\n教科書|きょうかしょ|darslik\n科学|かがく|fan\n帰宅|きたく|uyga qaytish\n自宅|じたく|o'z uyi\nお宅|おたく|uyingiz (hurmat)\n宅配便|たくはいびん|uyga yetkazish xizmati\n配達|はいたつ|yetkazib berish\n配送料|はいそうりょう|yetkazish haqi\n心配|しんぱい|tashvish\n配る|くばる|tarqatmoq\n~冊|~さつ|~ dona (kitob)\n冊数|さっすう|kitoblar soni\nし過ぎ|しすぎ|haddan ortiq qilish\n過ごす|すごす|vaqt o'tkazmoq\n過ぎる|すぎる|o'tmoq; haddan oshmoq\n通過|つうか|o'tish\n過去|かこ|o'tmish\n選手|せんしゅ|sportchi\n選挙|せんきょ|saylov\n選ぶ|えらぶ|tanlamoq\n無料|むりょう|bepul\n無地|むじ|oddiy (naqshsiz)\n無責任な|むせきにんな|mas'uliyatsiz\n無理な|むりな|imkonsiz; haddan ortiq\n無駄|むだ|befoyda\n復習|ふくしゅう|takrorlash\n往復|おうふく|borib kelish\n回復|かいふく|tiklanish\n復活|ふっかつ|qayta tiklanish\n生活|せいかつ|hayot, turmush\n社会人生活|しゃかいじんせいかつ|ishlovchi hayoti\n活動|かつどう|faoliyat\n活躍|かつやく|faol ishtirok\n在留カード|ざいりゅうカード|yashash kartasi\n現在|げんざい|hozirgi vaqt\n不在|ふざい|yo'qlik\n現代|げんだい|zamonaviy davr\n現金|げんきん|naqd pul\n表現|ひょうげん|ifoda\n現れる|あらわれる|paydo bo'lmoq\n実は|じつは|aslida\n実物|じつぶつ|asl narsa\n現実|げんじつ|voqelik\n実際に|じっさいに|haqiqatda\n実験|じっけん|tajriba\n実際|じっさい|haqiqat\n国際|こくさい|xalqaro\n交際|こうさい|munosabat\n手続きの際|てつづきのさい|rasmiyatchilik paytida\n出かける際|でかけるさい|chiqayotganda\n未満|みまん|...dan kam\n未来|みらい|kelajak\n未定|みてい|hali belgilanmagan\n未成年|みせいねん|voyaga yetmagan\n役立てる|やくだてる|foydalanmoq\n役に立つ|やくにたつ|foydali bo'lmoq\n市役所|しやくしょ|shahar hokimiyati\n役員|やくいん|rahbar a'zo\n開閉|かいへい|ochish-yopish\n閉める|しめる|yopmoq\n閉まる|しまる|yopilmoq\n飛行機|ひこうき|samolyot\n機会|きかい|imkoniyat\n機械|きかい|mashina\n機能|きのう|funksiya\n交通機関|こうつうきかん|jamoat transporti\n玄関|げんかん|kirish qismi\n関心|かんしん|qiziqish\n関東地方|かんとうちほう|Kanto hududi\n割る|わる|sindirmoq; bo'lmoq\n割れる|われる|sinmoq\n取る|とる|olmoq\n取り消す|とりけす|bekor qilmoq\n受け取る|うけとる|qabul qilib olmoq\n受取人|うけとりにん|oluvchi\n取り入れる|とりいれる|joriy qilmoq\n郵便|ゆうびん|pochta\n結局|けっきょく|oxir-oqibat\n薬局|やっきょく|dorixona\n郵便局|ゆうびんきょく|pochta bo'limi\n営業|えいぎょう|savdo; ish vaqti\n絵|え|rasm\n絵画|かいが|rassomlik\n絵本|えほん|rasmli kitob\n交換|こうかん|almashtirish\n言い換える|いいかえる|boshqacha aytmoq\n代金引換|だいきんひきかえ|yetkazganda to'lov\n第引き|—|fayldagi yozuv noaniq\n解決|かいけつ|hal qilish\n理解|りかい|tushunish\n解答|かいとう|javob (yechim)\n解説|かいせつ|tushuntirish\n分解|ぶんかい|qismlarga ajratish\n消防士|しょうぼうし|o't o'chiruvchi\n解消|かいしょう|bartaraf etish\n消火器|しょうかき|o't o'chirgich\n消極的|しょうきょくてき|passiv\n消す|けす|o'chirmoq\n市内|しない|shahar ichi\n車内|しゃない|vagon/mashina ichi\n東京都内|とうきょうとない|Tokio ichida\n以内|いない|ichida (muddat)\n家内|かない|rafiqam (o'z xotini)\n便利な|べんりな|qulay\n利用|りよう|foydalanish\n忘年会|ぼうねんかい|yil oxiri ziyofati\n忘れる|わすれる|unutmoq\n忘れ物|わすれもの|unutilgan narsa\n商品|しょうひん|mahsulot\n商店|しょうてん|do'kon\n返事|へんじ|javob\n返却|へんきゃく|qaytarish\n返す|かえす|qaytarmoq\n表面|ひょうめん|sirt\n発表|はっぴょう|e'lon; taqdimot\n代表|だいひょう|vakil\n予定表|よていひょう|reja jadvali\n表|ひょう|jadval\n祭日|さいじつ|bayram kuni\n文化祭|ぶんかさい|madaniyat festivali\nお祭り|おまつり|festival\n日本三大祭り|にほんさんだいまつり|Yaponiyaning uchta yirik festivali\n画面|がめん|ekran\n~方面|~ほうめん|~ tomon\n面白い|おもしろい|qiziqarli\n真面目|まじめ|jiddiy; vijdonli\n自由な|じゆうな|erkin\n不自由な|ふじゆうな|noqulay; cheklangan\n自由席|じゆうせき|erkin o'rin\n週末|しゅうまつ|dam olish kunlari\n月末|げつまつ|oy oxiri\n年末|ねんまつ|yil oxiri\n準備|じゅんび|tayyorgarlik\n備える|そなえる|tayyorlanmoq\n美人|びじん|go'zal ayol\n美しい|うつくしい|go'zal\n美しさ|うつくしさ|go'zallik\n美容院|びよういん|go'zallik saloni\n内容|ないよう|mazmun\n予防|よぼう|oldini olish\n防災用品|ぼうさいようひん|favqulodda zaxira buyumlari\n消防士|しょうぼうし|o't o'chiruvchi\n防ぐ|ふせぐ|oldini olmoq\n留学生|りゅうがくせい|xorijiy talaba\n保留|ほりゅう|keyinga qoldirish\n留守|るす|uyda yo'qlik\n書留|かきとめ|buyurtma xat\n守備|しゅび|himoya\n守る|まもる|himoya qilmoq; rioya qilmoq\n必要な|ひつような|zarur\n重要な|じゅうような|muhim\n要る|いる|kerak bo'lmoq\n授業|じゅぎょう|dars\n受講|じゅこう|kursga qatnashish\n教授|きょうじゅ|professor\n限定|げんてい|cheklangan\n定休日|ていきゅうび|doimiy dam olish kuni\n安定|あんてい|barqarorlik\n指定|してい|belgilash\n教育|きょういく|ta'lim\n飼育|しいく|hayvon boqish\n育つ|そだつ|o'smoq\n育てる|そだてる|tarbiyalamoq; o'stirmoq\n例|れい|misol\n例えば|たとえば|masalan\n上達|じょうたつ|mahoratning o'sishi\n達成感|たっせいかん|erishgan his\n配達|はいたつ|yetkazib berish\n友達|ともだち|do'st\n成分|せいぶん|tarkib\n成長|せいちょう|o'sish\n完成|かんせい|tugallash\n調子|ちょうし|holat\n体調|たいちょう|sog'lik holati\n調味料|ちょうみりょう|ziravor\n調整する|ちょうせいする|moslashtirmoq\n調べる|しらべる|tekshirmoq\n調査|ちょうさ|tadqiqot\n整理|せいり|tartibga solish\n整理券|せいりけん|navbat talon\n整える|ととのえる|tartibga keltirmoq\n最初|さいしょ|birinchi\n最後|さいご|oxirgi\n最近|さいきん|yaqinda\n最敬礼|さいけいれい|chuqur ta'zim\n最も|もっとも|eng\n他の|ほかの|boshqa\nその他|そのた|boshqalar\n睡眠|すいみん|uyqu\n眠い|ねむい|uyqusirayotgan\n眠る|ねむる|uxlamoq\n疲れる|つかれる|charchamoq\n鳴く|なく|sayramoq (hayvon)\n鳴る|なる|jaranglamoq\n遊園地|ゆうえんち|attraksion parki\n遊ぶ|あそぶ|o'ynamoq\n動物園|どうぶつえん|hayvonot bog'i\n公園|こうえん|park\n祇園祭|ぎおんまつり|Gion festivali\n祝日|しゅくじつ|rasmiy bayram\n祝う|いわう|nishonlamoq\nお祝い|おいわい|tabrik; sovg'a\n携帯電話|けいたいでんわ|mobil telefon\n時間帯|じかんたい|vaqt oralig'i\n帯|おび|kamar; belbog'\n変化|へんか|o'zgarish\n大変な|たいへんな|og'ir; juda\n変更する|へんこうする|o'zgartirmoq\n変わる|かわる|o'zgarmoq\n変わらず|かわらず|o'zgarmasdan\n必死に|ひっしに|jon-jahdi bilan\n必ず|かならず|albatta\n届ける|とどける|yetkazmoq\n届く|とどく|yetib kelmoq\n転入届|てんにゅうとどけ|ko'chib kelish arizasi\n禁止|きんし|taqiqlash\n禁煙|きんえん|chekish taqiqlangan\n禁煙席|きんえんせき|chekilmaydigan o'rin\n喫煙席|きつえんせき|chekiladigan o'rin\n煙|けむり|tutun\n各地|かくち|turli joylar\n各駅|かくえき|har bir bekat\n各国|かっこく|har bir mamlakat\n各自|かくじ|har kim\n目次|もくじ|mundarija\n次第|しだい|...ga qarab\n次男|じなん|ikkinchi o'g'il\n次回|じかい|keyingi safar\n次|つぎ|keyingi\n指定席|していせき|belgilangan o'rin\n指定の袋|していのふくろ|belgilangan qop\n指|ゆび|barmoq\n指輪|ゆびわ|uzuk\n危険な|きけんな|xavfli\n危ない|あぶない|xavfli\n冒険|ぼうけん|sarguzasht\n熱|ねつ|isitma; harorat\n熱心な|ねっしんな|g'ayratli\n熱い|あつい|issiq (narsa)\n加熱|かねつ|qizdirish\nお湯|おゆ|issiq suv\n湯のみ|ゆのみ|choy piyola\n停止|ていし|to'xtatish\n停電|ていでん|elektr o'chishi\n停車|ていしゃ|to'xtash\nバス停|バスてい|avtobus bekati\n各駅停車|かくえきていしゃ|har bekatda to'xtovchi poyezd\n降車口|こうしゃぐち|tushish eshigi\n以降|いこう|...dan keyin\n降りる|おりる|tushmoq\n降る|ふる|yog'moq (yomg'ir)\n量|りょう|miqdor\n降水量|こうすいりょう|yog'ingarchilik miqdori\n使用量|しようりょう|foydalanish miqdori\n大量|たいりょう|ko'p miqdor\n量る|はかる|o'lchamoq\n身長|しんちょう|bo'y\n独身|どくしん|turmushga chiqmagan\n身だしなみ|みだしなみ|tashqi ko'rinish; ozodalik\n出身|しゅっしん|kelib chiqish joyi\n刺身|さしみ|sashimi (xom baliq)\n本当|ほんとう|haqiqat\n当店|とうてん|bizning do'kon\n当社|とうしゃ|bizning kompaniya\n当たる|あたる|tegmoq; to'g'ri kelmoq\n当たり前|あたりまえ|tabiiy; oddiy\n昔|むかし|qadim\n冷房|れいぼう|konditsioner (sovutish)\n冷たい|つめたい|sovuq\n冷やす|ひやす|sovutmoq\n冷める|さめる|sovib qolmoq\n冷ます|さます|sovitmoq\n減少|げんしょう|kamayish\n減る|へる|kamaymoq\n減らす|へらす|kamaytirmoq\n改正|かいせい|o'zgartirish (qonun)\n改札口|かいさつぐち|chipta tekshiruvi\n改める|あらためる|yangilamoq\n相談|そうだん|maslahat\n首相|しゅしょう|bosh vazir\n相手|あいて|sherik; raqib\n部分|ぶぶん|qism\n部長|ぶちょう|bo'lim boshlig'i\nボレーボール部|ボレーボールぶ|voleybol klubi\n全部|ぜんぶ|hammasi\n部屋|へや|xona\n歳|さい|yosh\n二十歳|はたち|yigirma yosh\n一般|いっぱん|umumiy\n一般に|いっぱんに|odatda\n個|こ|dona\n個数|こすう|donalar soni\n個人|こじん|shaxs\n団体|だんたい|guruh, tashkilot\n目的|もくてき|maqsad\n一般的な|いっぱんてきな|umumiy\n基本的な|きほんてきな|asosiy\n個人的な|こじんてきな|shaxsiy\n結果的|けっかてき|natijada\n経験|けいけん|tajriba\n経営|けいえい|boshqaruv\n経つ|たつ|o'tmoq (vaqt)\n経済|けいざい|iqtisod\n済む|すむ|tugamoq\n日本酒|にほんしゅ|yapon sakesi\n料理酒|りょうりしゅ|pazandalik sakesi\n飲酒|いんしゅ|spirtli ichimlik ichish\nお酒|おさけ|spirtli ichimlik\n酒屋|さかや|spirtli ichimliklar do'koni\n比べる|くらべる|solishtirmoq\n昨日|きのう|kecha\n昨夜|さくや|kecha kechqurun\n昨年|さくねん|o'tgan yil\n晩|ばん|kechqurun\n今晩|こんばん|bugun kechqurun\n晩ご飯|ばんごはん|kechki ovqat\n朝晩|あさばん|ertalab va kechqurun\n毎晩|まいばん|har kecha\n死亡|しぼう|vafot etish\n亡くなる|なくなる|vafot etmoq\n砂糖|さとう|shakar\n砂|すな|qum\n結果|けっか|natija\n効果|こうか|samara\n成果|せいか|yutuq, natija\n果物|くだもの|meva\n伝言|でんごん|xabar\n伝統|でんとう|an'ana\n伝える|つたえる|yetkazmoq\n手伝う|てつだう|yordam bermoq\n正確な|せいかくな|aniq\n確かに|たしかに|albatta; haqiqatan\n確認|かくにん|tasdiqlash\n認める|みとめる|tan olmoq\n救助|きゅうじょ|qutqarish\n入浴介助|にゅうよくかいじょ|cho'milishda yordam\n助ける|たすける|yordam bermoq; qutqarmoq\n歩道橋|ほどうきょう|yer usti o'tish yo'li\n橋|はし|ko'prik\n日本橋|にほんばし|Nihonbashi\n高橋さん|たかはしさん|Takahashi janob/xonim\n公園|こうえん|park\n困る|こまる|qiyinchilikda qolmoq\n花粉症|かふんしょう|gul changi allergiyasi\n粉|こな|kukun\n小麦粉|こむぎこ|un\n粉茶|こなちゃ|kukun choy\n高級|こうきゅう|yuqori sifatli\n中級|ちゅうきゅう|o'rta daraja\n上級|じょうきゅう|yuqori daraja\n１級|いっきゅう|1-daraja\n性別|せいべつ|jins\n女性|じょせい|ayol\n男性|だんせい|erkak\n性格|せいかく|xarakter\n機能性|きのうせい|funksionallik\n工夫|くふう|topqirlik; yechim izlash\n丈夫|じょうぶ|mustahkam\n大丈夫|だいじょうぶ|yaxshi; xavotir yo'q\n夫|おっと|er (o'z eri)\n違う|ちがう|farq qilmoq; noto'g'ri\n間違い|まちがい|xato\n間違う|まちがう|adashmoq\n間違える|まちがえる|xato qilmoq\n歯科|しか|stomatologiya\n歯|は|tish\n歯医者|はいしゃ|tish shifokori\n虫歯|むしば|tish kariesi\n並ぶ|ならぶ|saf tortmoq\n並べる|ならべる|tizmoq\n歯並び|はならび|tishlar qatori\n息|いき|nafas\n息切れ|いきぎれ|nafas qisilishi\n息子|むすこ|o'g'il\n銀行口座|ぎんこうこうざ|bank hisob raqami\n座席|ざせき|o'rindiq\n正座|せいざ|tiz cho'kib o'tirish\n座る|すわる|o'tirmoq\n呼吸|こきゅう|nafas olish\n呼ぶ|よぶ|chaqirmoq\n吸う|すう|so'rmoq; tortmoq\n泣く|なく|yig'lamoq\n受信|じゅしん|signal qabul qilish\n送信|そうしん|yuborish\n自信|じしん|o'ziga ishonch\n信頼|しんらい|ishonch\n快速|かいそく|tezyurar\n皿|さら|likopcha\n灰皿|はいざら|kulsolgich\n様子|ようす|holat; ko'rinish\n様|さま|janob; xonim\nお疲れ様|おつかれさま|charchamang (minnatdorchilik)\n感じる|かんじる|his qilmoq\n感動|かんどう|ta'sirlanish\n食感|しょっかん|ovqat teksturasi\n感謝|かんしゃ|minnatdorchilik\n達成感|たっせいかん|erishgan his\n美術|びじゅつ|tasviriy san'at\n芸術|げいじゅつ|san'at\n技術|ぎじゅつ|texnika\n手術|しゅじゅつ|operatsiya\n美術館|びじゅつかん|san'at muzeyi\n救急車|きゅうきゅうしゃ|tez yordam mashinasi\n救う|すくう|qutqarmoq\n渡る|わたる|kesib o'tmoq\n渡す|わたす|topshirmoq\n方法|ほうほう|usul\n文法|ぶんぽう|grammatika\n移住|いじゅう|ko'chib o'tish\n移動|いどう|ko'chish\n移る|うつる|ko'chmoq\n移す|うつす|ko'chirmoq\n材料|ざいりょう|material; masalliq\n具材|ぐざい|ingredientlar\n食材|しょくざい|oziq-ovqat mahsulotlari\n教材|きょうざい|o'quv materiali\n混んでいる|こんでいる|gavjum\n混雑|こんざつ|gavjumlik\nかき混ぜる|かきまぜる|aralashtirmoq\n焼く|やく|kuydirmoq; pishirmoq\n焼ける|やける|yonmoq; pishmoq\nもんじゃ焼き|もんじゃやき|monjayaki\n件名|けんめい|xat mavzusi\n事件|じけん|hodisa\n要件|ようけん|talab; shart\n条件|じょうけん|shart\nしょう油|しょうゆ|soya sousi\n灯油|とうゆ|kerosin\n油|あぶら|yog'\n通勤|つうきん|ishga qatnash\n夜勤|やきん|tungi smena\n出勤|しゅっきん|ishga kelish\n勤務|きんむ|xizmat; ish\n務める|つとめる|vazifani bajarmoq\n細い|ほそい|ingichka\n細かい|こまかい|mayda; batafsil\n非常|ひじょう|favqulodda; juda\n非常口|ひじょうぐち|favqulodda chiqish\n日常|にちじょう|kundalik\n正常な|せいじょうな|normal\n通常|つうじょう|odatda\n日常生活|にちじょうせいかつ|kundalik hayot\n耳鼻科|じびか|quloq-burun shifokori\n鼻|はな|burun\n警官|けいかん|politsiyachi\n警察|けいさつ|politsiya\n警察署|けいさつしょ|politsiya bo'limi\n医師|いし|shifokor\n看護師|かんごし|hamshira\n教師|きょうし|o'qituvchi\n講師|こうし|ma'ruzachi\n花火師|はなびし|fayerverk ustasi\n残念|ざんねん|afsus\n残業|ざんぎょう|qo'shimcha ish\n残す|のこす|qoldirmoq\n残り|のこり|qoldiq\n残る|のこる|qolmoq\n記念|きねん|esdalik\n記念品|きねんひん|esdalik sovg'a\n残念な|ざんねんな|afsuslanarli\n苦労|くろう|mashaqqat\n苦しい|くるしい|azobli; og'ir\n苦い|にがい|achchiq\n苦手な|にがてな|yoqtirmaydigan; qo'li kelmaydigan\n一流|いちりゅう|birinchi darajali\n交流会|こうりゅうかい|tanishuv uchrashuvi\n流行|りゅうこう|moda; epidemiya\n洗い流す|あらいながす|yuvib tashlamoq\n流し|ながし|kir yuvish joyi\n流す|ながす|oqizmoq\n涙|なみだ|ko'z yoshi\n頭痛|ずつう|bosh og'rig'i\n腹痛|ふくつう|qorin og'rig'i\n痛い|いたい|og'riqli\n職員|しょくいん|xodim\n職業|しょくぎょう|kasb\n職場|しょくば|ish joyi\n就職|しゅうしょく|ishga kirish\n転職|てんしょく|ish almashtirish\n勤務|きんむ|xizmat; ish\n事務|じむ|idora ishi\n公務員|こうむいん|davlat xizmatchisi\n勤務形態|きんむけいたい|ish tartibi\n勤務時間|きんむじかん|ish vaqti\n対応|たいおう|javob choralari\n対策|たいさく|chora-tadbir\n対象|たいしょう|obyekt; maqsadli guruh\n１対２|いちたいに|1 ga 2\n対する|たいする|nisbatan\n船長|せんちょう|kapitan\n風船|ふうせん|shar\n船|ふね|kema\n船便|ふなびん|dengiz pochtasi\n図形|ずけい|shakl (geometriya)\n人形|にんぎょう|qo'g'irchoq\n形|かたち|shakl\n屋形船|やかたぶね|yopiq sayr kemasi\n卵|たまご|tuxum\n卵焼き|たまごやき|tuxumli rulet\n感想|かんそう|taassurot\n予想|よそう|taxmin\n雪像|せつぞう|qor haykali\n雪|ゆき|qor\n雪まつり|ゆきまつり|qor festivali\n原則|げんそく|asosiy tamoyil\n原料|げんりょう|xomashyo\n原因|げんいん|sabab\n方向|ほうこう|yo'nalish\n(~の方)向け|(~のほう)むけ|~ uchun mo'ljallangan\n協力|きょうりょく|hamkorlik\n空港|くうこう|aeroport\n~港|~こう|~ port\n港|みなと|port\n記入|きにゅう|to'ldirish\n下記|かき|quyidagi\n日記|にっき|kundalik\n筆記用具|ひっきようぐ|yozuv buyumlari\n入荷|にゅうか|yuk kelishi\n出荷|しゅっか|yuk jo'natish\n荷物|にもつ|yuk\n手荷物|てにもつ|qo'l yuki\n議員|ぎいん|deputat\n会議|かいぎ|yig'ilish\n会議室|かいぎしつ|yig'ilish xonasi\n不思議|ふしぎ|ajoyib; sirli\n駐車|ちゅうしゃ|to'xtab turish\n駐車券|ちゅうしゃけん|to'xtash talon\n駐車場|ちゅうしゃじょう|avtoturargoh\n窓|まど|deraza\n窓ガラス|まどガラス|deraza oynasi\n窓口|まどぐち|ish oynasi (kassa)\n若者|わかもの|yoshlar\n若い|わかい|yosh\n若いころ|わかいころ|yoshlik chog'i\n若い時|わかいとき|yosh vaqtda\n若いうちに|わかいうちに|yosh ekanida\n戻す|もどす|qaytarmoq\n戻る|もどる|qaytmoq\n大型|おおがた|katta hajmli\n小型|こがた|kichik hajmli\n最新型|さいしんがた|eng yangi model\n新型コロナ|しんがたコロナ|yangi koronavirus\n失敗|しっぱい|muvaffaqiyatsizlik\n牛な|—|fayldagi yozuv noaniq\n見失|みうしな|ko'zdan yo'qotmoq (見失う)\n礼儀|れいぎ|odob\nお礼|おれい|minnatdorchilik\n失礼する|しつれいする|kechirasiz; xayrlashmoq\n失礼な|しつれいな|qo'pol\n失礼いたしました|しつれいいたしました|kechirasiz (hurmat)\n決定|けってい|qaror\n決して|けっして|hech qachon (inkor bilan)\n決まる|きまる|belgilanmoq\n決める|きめる|qaror qilmoq\n故障|こしょう|buzilish\n事故|じこ|baxtsiz hodisa\n故|ゆえ|shu sababli (rasmiy)\n難問|なんもん|qiyin masala\n避難場所|ひなんばしょ|evakuatsiya joyi\n困難な|こんなんな|qiyin\n難しい|むずかしい|qiyin\n初級|しょきゅう|boshlang'ich daraja\n初診|しょしん|birinchi ko'rik\n最初|さいしょ|birinchi\n初め|はじめ|boshlanish\n初めて|はじめて|birinchi marta\n情報|じょうほう|axborot\n感情|かんじょう|his-tuyg'u\n事情|じじょう|vaziyat; sabab\n表情|ひょうじょう|yuz ifodasi\n報告|ほうこく|hisobot\n予報|よほう|bashorat\n震度|しんど|zilzila kuchi (shkala)\n地震|じしん|zilzila\n電波|でんぱ|radio to'lqin\n波|なみ|to'lqin\n津波|つなみ|sunami\n~階|~かい|~-qavat\n階段|かいだん|zina\n箱|はこ|quti\nゴミ箱|ゴミばこ|axlat qutisi\n全員|ぜんいん|hamma (kishilar)\n全席|ぜんせき|barcha o'rinlar\n全部|ぜんぶ|hammasi\n安全な|あんぜんな|xavfsiz\n全て|すべて|hammasi\n番組|ばんぐみ|teledastur\n~組|~くみ|~ guruh/sinf\n組み合わせ|くみあわせ|kombinatsiya\n組む|くむ|birlashtirmoq\n取り組む|とりくむ|jiddiy shug'ullanmoq\n冷蔵庫|れいぞうこ|muzlatgich\n冷蔵する|れいぞうする|muzlatgichda saqlamoq\n金庫|きんこ|seyf\n車庫|しゃこ|garaj\n召し上がる|めしあがる|yemoq (hurmat)\n虫|むし|hasharot\n多忙な|たぼうな|juda band\n忙しい|いそがしい|band\n寺|てら|ibodatxona\nお寺|おてら|ibodatxona\n種目|しゅもく|tur (sport)\n種類|しゅるい|tur, xil\n種|たね|urug'\n希少性|きしょうせい|kamyoblik\n希望|きぼう|umid; xohish\n希望日時|きぼうにちじ|xohlagan sana va vaqt\n失望|しつぼう|umidsizlik\n望む|のぞむ|orzu qilmoq\n伺う|うかがう|so'ramoq; tashrif buyurmoq (hurmat)\n汚い|きたない|iflos\n汚れ|よごれ|dog'\n汚れる|よごれる|ifloslanmoq\n保存する|ほぞんする|saqlamoq\n存じません|ぞんじません|bilmayman (hurmat)\nご存知です|ごぞんじです|bilasiz (hurmat)\n濃い|こい|quyuq; to'q\n了解|りょうかい|tushundim; kelishuv\n修了|しゅうりょう|kursni tamomlash\n登場|とうじょう|paydo bo'lish\n登場人物|とうじょうじんぶつ|qahramonlar\n登山|とざん|tog'ga chiqish\n登る|のぼる|ko'tarilmoq\n山登り|やまのぼり|tog'ga chiqish\n合格|ごうかく|imtihondan o'tish\n資格|しかく|malaka; litsenziya\n性格|せいかく|xarakter\n格安|かくやす|arzon narx\n募金|ぼきん|xayriya yig'ish\n募集|ぼしゅう|ishchi/ariza yig'ish\n応募|おうぼ|ariza topshirish\n応募用紙|おうぼようし|ariza blankasi\n技|わざ|mahorat; usul\n技術|ぎじゅつ|texnika\n技術者|ぎじゅつしゃ|muhandis; texnik\n祭典競技|さいてんきょうぎ|bayram musobaqalari\n戦後|せんご|urushdan keyingi davr\n戦乱|せんらん|urush g'alayoni\n戦争|せんそう|urush\n戦い|たたかい|jang\n戦う|たたかう|jang qilmoq\n反対|はんたい|qarshi; teskari\n違反|いはん|qoidabuzarlik\n捨て方|すてかた|tashlash usuli\n捨てる|すてる|tashlamoq\n指示|しじ|ko'rsatma\n展示|てんじ|ko'rgazma\n表示|ひょうじ|ko'rsatish\n示す|しめす|ko'rsatmoq\n完成|かんせい|tugallash\n完了|かんりょう|yakunlanish\n完全な|かんぜんな|to'liq\n笑顔|えがお|tabassum\n笑い|わらい|kulgi\n笑う|わらう|kulmoq\n簡単な|かんたんな|oson\n単位|たんい|birlik; kredit\n単語|たんご|so'z\n単純|たんじゅん|oddiy\n労働者|ろうどうしゃ|ishchi\n苦労|くろう|mashaqqat\n飛行場|ひこうじょう|aerodrom\n飛ぶ|とぶ|uchmoq\n飛び出す|とびだす|otilib chiqmoq\n速達|そくたつ|tezkor pochta\n速度|そくど|tezlik\n時速|じそく|soatiga tezlik\n高速道路|こうそくどうろ|avtomagistral\n速い|はやい|tez\n決勝|けっしょう|final\n優勝|ゆうしょう|g'alaba\n勝つ|かつ|g'alaba qozonmoq\n勝手な|かってな|o'zboshimcha\n神社|じんじゃ|sinto ziyoratgohi\n神様|かみさま|xudo\n神奈川県|かながわけん|Kanagawa prefekturasi\n神経質な|しんけいしつな|asabiy\n録音|ろくおん|ovoz yozish\n録画|ろくが|video yozish\n記録|きろく|rekord; yozuv\n適当な|てきとうな|mos; beparvo\n快適な|かいてきな|qulay\n辞書|じしょ|lug'at\nお世辞|おせじ|xushomad\n辞める|やめる|ishdan ketmoq\n押す|おす|bosmoq\n押し入れ|おしいれ|devor shkaf\n押しボタン式|おしボタンしき|tugmali\n価値|かち|qiymat\n価格|かかく|narx\n定価|ていか|belgilangan narx\n評価|ひょうか|baholash\n値段|ねだん|narx\n値上げ|ねあげ|narx oshirish\n値下げ|ねさげ|narx tushirish\n戸|と|eshik\n戸だな|とだな|sirpanma shkaf\n雨戸|あまど|yomg'ir panjarasi\n江戸時代|えどじだい|Edo davri\n晴れ|はれ|ochiq havo\n晴れる|はれる|ochilmoq (osmon)\n両国|りょうこく|ikki davlat; Ryogoku\n両親|りょうしん|ota-ona\n~両|~りょう|~ vagon\n広告|こうこく|reklama\n申告|しんこく|deklaratsiya\n報告|ほうこく|hisobot\n汗|あせ|ter\n汗をかく|あせをかく|terlamoq\n製品|せいひん|mahsulot\n新製品|しんせいひん|yangi mahsulot\n~製|~せい|~ ishlab chiqarilgan\n勝負|しょうぶ|bellashuv\n負ける|まける|yutqazmoq\n投手|とうしゅ|to'p uloqtiruvchi (pitcher)\n投げる|なげる|otmoq\n冷凍庫|れいとうこ|muzlatkich\n凍る|こおる|muzlamoq\n薄い|うすい|yupqa; och\n普通の|ふつうの|oddiy\n夫妻|ふさい|er-xotin\n妻|つま|xotin (o'z xotini)\n練習|れんしゅう|mashq\n~君|~くん|~ (yigitga murojaat)\n君|きみ|sen\n婦人|ふじん|xonim\n新婦|しんぷ|kelin\n主婦|しゅふ|uy bekasi\n産婦人科|さんふじんか|akusherlik-ginekologiya\n賞|しょう|mukofot\n賞金|しょうきん|mukofot puli\n賞品|しょうひん|sovg'a\n賞味期限|しょうみきげん|yaroqlilik muddati (eng yaxshi)\n入賞|にゅうしょう|sovrinli o'rin olish\n販売|はんばい|sotish\n自動販売機|じどうはんばいき|savdo avtomati\n意欲|いよく|intilish\n食欲|しょくよく|ishtaha\n欲しい|ほしい|xohlamoq\n高齢|こうれい|keksalik\n年齢|ねんれい|yosh\n曲|きょく|qo'shiq; kuy\n曲線|きょくせん|egri chiziq\n楽曲|がっきょく|musiqa asari\n曲がる|まがる|burilmoq\n曲げる|まげる|egmoq\n関係|かんけい|aloqa\n係|かかり|mas'ul xodim\n食塩|しょくえん|osh tuzi\n塩|しお|tuz\n枚数|まいすう|varaqlar soni\n~枚|~まい|~ varaq (yassi narsa)\n奥|おく|ichkari\n奥さん|おくさん|xonim (birovning xotini)\n輸出|ゆしゅつ|eksport\n輸入|ゆにゅう|import\n輸送|ゆそう|tashish\n鉄|てつ|temir\n鉄道|てつどう|temir yo'l\n地下鉄|ちかてつ|metro\n内側|うちがわ|ichki tomon\n窓側|まどがわ|deraza tomoni\n右側|みぎがわ|o'ng tomon\n両側|りょうがわ|ikki tomon\n取り替える|とりかえる|almashtirmoq\n両替|りょうがえ|valyuta almashtirish\n着替える|きがえる|kiyim almashtirmoq\n~島|~しま|~ orol\n島|しま|orol\n出血|しゅっけつ|qon ketish\n血|ち|qon\n骨折|こっせつ|suyak sinishi\n骨|ほね|suyak\n右折|うせつ|o'ngga burilish\n左折|させつ|chapga burilish\n折る|おる|sindirmoq; bukmoq\n折れる|おれる|sinmoq; bukilmoq\n折り紙|おりがみ|origami\n黄色|きいろ|sariq rang\n黄色い|きいろい|sariq\n製造|せいぞう|ishlab chiqarish\n造る|つくる|yasamoq\n裏|うら|orqa tomon\n裏返す|うらがえす|ag'darmoq\n再生|さいせい|qayta ijro\n再ダイヤル|さいダイヤル|qayta terish\n再入国|さいにゅうこく|qayta kirish\n再来週|さらいしゅう|ikki haftadan keyin\n書類|しょるい|hujjatlar\n人類|じんるい|insoniyat\n分類|ぶんるい|tasniflash\n乗馬|じょうば|ot minish\n馬|うま|ot\n石油|せきゆ|neft\n石けん|せっけん|sovun\n石|いし|tosh\n緑茶|りょくちゃ|yashil choy\n緑|みどり|yashil\n倍|ばい|ikki barobar\n~倍|~ばい|~ barobar\n米国|べいこく|AQSh\n米|こめ|guruch\n金額|きんがく|summa\n半額|はんがく|yarim narx\n預金|よきん|omonat\n預ける|あずける|saqlashga topshirmoq\n衣服|いふく|kiyim\n衣類|いるい|kiyim-kechak\nびわ湖|びわこ|Biwa ko'li\n湖|みずうみ|ko'l\n角|かど|burchak\n角度|かくど|burchak darajasi\n三角形|さんかくけい|uchburchak\n四角い|しかくい|to'rtburchak\n政治|せいじ|siyosat\n政治家|せいじか|siyosatchi\n治療|ちりょう|davolash\n治す|なおす|davolamoq\n治る|なおる|tuzalmoq\n雲|くも|bulut\n吹く|ふく|esmoq; puflamoq\n課長|かちょう|bo'lim boshlig'i\n第一課|だいいっか|1-bo'lim\n貿易|ぼうえき|tashqi savdo\n優しい|やさしい|mehribon\n厚い|あつい|qalin\n政府|せいふ|hukumat\n都道府県|とどうふけん|Yaponiya prefekturalari\n否定|ひてい|inkor\n否定的な|ひていてきな|salbiy\n専門|せんもん|mutaxassislik\n専門家|せんもんか|mutaxassis");
+var KMAP = {};
+N5.concat(KJ).forEach(function (e) { KMAP[e.k] = e; });
+function strip(x) { return (x || "").replace(/\s*\([^)]*\)/g, ""); }
+function parts(w) {
+  var o = [], seen = "", i, e;
+  for (i = 0; i < w.length; i++) {
+    e = KMAP[w[i]];
+    if (e && seen.indexOf(w[i]) < 0) {
+      seen += w[i];
+      o.push(w[i] + "  " + [strip(e.on), strip(e.kun)].filter(Boolean).join(" / ").replace(/,/g, "、"));
+    }
+  }
+  return o.join("\n");
+}
+function size(el, t) {
+  el.style.fontSize = t.length > 5 ? "2.2rem" : t.length > 3 ? "3rem" : t.length > 2 ? "4.2rem" : t.length > 1 ? "5.5rem" : "";
+}
+function parseW(t) {
+  return t.split("\n").map(function (l) { var a = l.split("|"); return { k: a[0], r: a[1], m: a[2] }; });
+}
+
+var HI = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ";
+var RO = "a i u e o ka ki ku ke ko sa shi su se so ta chi tsu te to na ni nu ne no ha hi fu he ho ma mi mu me mo ya yu yo ra ri ru re ro wa wo n ga gi gu ge go za ji zu ze zo da ji zu de do ba bi bu be bo pa pi pu pe po".split(" ");
+function romaji(s) {
+  s = s.replace(/[\u30a1-\u30f6]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 96); });
+  var out = "", dbl = false, i, c, r, n, y;
+  for (i = 0; i < s.length; i++) {
+    c = s[i];
+    if (c === "っ") { dbl = true; continue; }
+    n = HI.indexOf(c);
+    if (n < 0) { out += c; continue; }
+    r = RO[n];
+    y = "ゃゅょ".indexOf(s[i + 1]);
+    if (y > -1) { r = (/^(sh|ch|j)i$/.test(r) ? r.slice(0, -1) : r.slice(0, -1) + "y") + "auo"[y]; i++; }
+    if (dbl) { r = (r[0] === "c" ? "t" : r[0]) + r; dbl = false; }
+    out += r;
+  }
+  return out;
+}
+function fmt(s) {
+  if (!s) return "—";
+  if (s.indexOf("(") > -1) return s;
+  return s.split(",").map(function (x) { return x + " (" + romaji(x) + ")"; }).join("、 ");
+}
+function parseN3(t) {
+  return t.split("\n").map(function (l) {
+    var a = l.split("|");
+    return { k: a[0], on: a[1], kun: a[2], m: a[3] };
+  });
+}
+
+var deck = DATA.slice(), i = 0, known = 0, again = 0, redo = [];
+var $ = function (id) { return document.getElementById(id); };
+
+function show() {
+  if (!deck.length) return;
+  var c = deck[i];
+  $("card").classList.remove("flip");
+  $("kanji").textContent = c.k;
+  $("meaning").textContent = c.m;
+  var w = c.r !== undefined;
+  $("lOn").textContent = w ? "O'qilishi:" : "On'yomi:";
+  $("on").textContent = w ? fmt(c.r) : fmt(c.on);
+  $("kun").parentNode.style.display = w ? "none" : "";
+  $("kun").textContent = fmt(c.kun);
+  var ex = w ? parts(c.k) : (c.ex || "");
+  $("ex").textContent = ex;
+  $("ex").style.display = ex ? "" : "none";
+  size($("kanji"), c.k);
+  $("pos").textContent = (i + 1) + " / " + deck.length;
+  $("bar").style.width = ((i + 1) / deck.length * 100) + "%";
+  $("known").textContent = known;
+  $("again").textContent = again;
+}
+function flip() { $("card").classList.toggle("flip"); }
+function go(d) { i = (i + d + deck.length) % deck.length; show(); }
+function mark(ok) {
+  if (ok) known++; else { again++; redo.push(deck[i]); }
+  if (i === deck.length - 1) { finish(); } else { i++; show(); }
+}
+function finish() {
+  $("scene").style.display = "none";
+  $("controls").style.display = "none";
+  $("done").style.display = "block";
+  $("known").textContent = known;
+  $("again").textContent = again;
+  $("retry").style.display = redo.length ? "inline-block" : "none";
+}
+function start(list) {
+  deck = list; i = 0; known = 0; again = 0; redo = [];
+  $("scene").style.display = "";
+  $("controls").style.display = "";
+  $("done").style.display = "none";
+  show();
+}
+function shuffle(a) {
+  a = a.slice();
+  for (var n = a.length - 1; n > 0; n--) {
+    var j = Math.floor(Math.random() * (n + 1)), t = a[n]; a[n] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+$("scene").onclick = flip;
+$("scene").onkeydown = function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); } };
+$("prev").onclick = function () { go(-1); };
+$("next").onclick = function () { go(1); };
+$("btnOk").onclick = function () { mark(true); };
+$("btnAgain").onclick = function () { mark(false); };
+$("shuffle").onclick = function () { start(shuffle(DATA)); };
+$("reset").onclick = function () { start(DATA.slice()); };
+$("retry").onclick = function () { start(shuffle(redo)); };
+document.onkeydown = function (e) {
+  if (e.key === "ArrowRight") go(1);
+  if (e.key === "ArrowLeft") go(-1);
+};
+
+show();
+
+/* ---------- TEST ---------- */
+var tOrder = [], ti = 0, tscore = 0, tlocked = false;
+
+function setMode(m) {
+  $("cardsMode").style.display = m === "cards" ? "" : "none";
+  $("testMode").style.display = m === "test" ? "" : "none";
+  $("tabCards").classList.toggle("on", m === "cards");
+  $("tabTest").classList.toggle("on", m === "test");
+  if (m === "test") startTest();
+}
+function startTest() {
+  var cnt = parseInt($("tcount").value, 10);
+  tOrder = cnt ? shuffle(DATA).slice(0, cnt) : shuffle(DATA);
+  ti = 0; tscore = 0;
+  $("tres").style.display = "none";
+  $("qwrap").style.display = "";
+  showQ();
+}
+function showQ() {
+  tlocked = false;
+  var c = tOrder[ti];
+  $("tk").textContent = c.k;
+  size($("tk"), c.k);
+  $("tq").textContent = ti + 1;
+  $("tn").textContent = tOrder.length;
+  $("ts").textContent = tscore;
+  $("tfb").textContent = "";
+  $("tnext").style.display = "none";
+  var seenM = {};
+  var pool = DATA.filter(function (x) { if (x.m === c.m || seenM[x.m]) return false; seenM[x.m] = 1; return true; });
+  var wrong = shuffle(pool).slice(0, 3);
+  var opts = shuffle(wrong.concat([c]));
+  var box = $("opts");
+  box.innerHTML = "";
+  opts.forEach(function (o) {
+    var b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = o.m;
+    b.onclick = function () { answer(b, o === c); };
+    box.appendChild(b);
+  });
+}
+function answer(btn, right) {
+  if (tlocked) return;
+  tlocked = true;
+  var c = tOrder[ti];
+  if (right) {
+    tscore++;
+    btn.classList.add("right");
+  } else {
+    btn.classList.add("wrong");
+    var all = $("opts").children;
+    for (var n = 0; n < all.length; n++) {
+      if (all[n].textContent === c.m) all[n].classList.add("right");
+    }
+  }
+  $("ts").textContent = tscore;
+  $("tfb").textContent = c.r !== undefined ? fmt(c.r) : fmt(c.on) + "  ·  " + fmt(c.kun);
+  $("tnext").textContent = ti === tOrder.length - 1 ? "Natijani ko'rish" : "Keyingi savol";
+  $("tnext").style.display = "inline-block";
+}
+function nextQ() {
+  if (ti === tOrder.length - 1) {
+    $("qwrap").style.display = "none";
+    $("tres").style.display = "block";
+    $("tmsg").textContent = tscore + " / " + tOrder.length + " ta to'g'ri";
+  } else {
+    ti++;
+    showQ();
+  }
+}
+$("tabCards").onclick = function () { setMode("cards"); };
+$("tabTest").onclick = function () { setMode("test"); };
+$("tnext").onclick = nextQ;
+$("tcount").onchange = startTest;
+function setLevel(l) {
+  DATA = l === "n3" ? W : l === "k" ? KJ : N5;
+  $("lvN5").classList.toggle("on", l === "n5");
+  $("lvN3").classList.toggle("on", l === "n3");
+  $("lvK").classList.toggle("on", l === "k");
+  if ($("testMode").style.display === "none") start(DATA.slice()); else startTest();
+}
+$("lvN5").onclick = function () { setLevel("n5"); };
+$("lvN3").onclick = function () { setLevel("n3"); };
+$("lvK").onclick = function () { setLevel("k"); };
+$("tagain").onclick = startTest;
+</script>
+</body>
+</html>
